@@ -2,12 +2,19 @@
 const path = require('path');
 
 // External Module
+// Load .env from project root even if process is started in a subdirectory
+const rootEnvPath = path.resolve(__dirname, '..', '.env');
+const localEnvPath = path.resolve(__dirname, '.env');
+let envLoaded = require('dotenv').config({ path: rootEnvPath });
+if (envLoaded.error) {
+  envLoaded = require('dotenv').config({ path: localEnvPath });
+}
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { default: mongoose } = require('mongoose');
 const multer = require('multer');
-const DB_PATH = "mongodb+srv://Prashant:Prashant089@completecoding.ysiqcy9.mongodb.net/?retryWrites=true&w=majority&appName=CompleteCoding";
+const DB_PATH = process.env.MONGO_URI || process.env.MONGO_DEV_URI;
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -65,7 +72,7 @@ app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')))
 app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')))
 
 app.use(session({
-  secret: "KnowledgeGate AI with Complete Coding",
+  secret: process.env.SESSION_SECRET || "KnowledgeGate AI with Complete Coding",
   resave: false,
   saveUninitialized: true,
   store
@@ -89,7 +96,9 @@ app.use("/host", hostRouter);
 
 app.use(errorsController.pageNotFound);
 
-const PORT = 3003;
+const PORT = process.env.PORT || 3003;
+
+console.log("MONGO_URI from env:", process.env.MONGO_URI);
 
 mongoose.connect(DB_PATH, { dbName: 'airbnb' }).then(() => {
   console.log('Connected to Mongo');
