@@ -96,15 +96,32 @@ app.use("/host", hostRouter);
 
 app.use(errorsController.pageNotFound);
 
-const PORT = process.env.PORT || 3003;
+const PORT = Number(process.env.PORT || 3003);
 
+const showMasked = (s) => (typeof s === 'string' ? `${s.slice(0, 20)}...` : s);
 console.log("MONGO_URI from env:", process.env.MONGO_URI);
+console.log("Using DB_PATH:", showMasked(DB_PATH));
 
 mongoose.connect(DB_PATH, { dbName: 'airbnb' }).then(() => {
   console.log('Connected to Mongo');
-  app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
-  });
+
+  const startServer = (port, retriesLeft = 2) => {
+    const server = app.listen(port, () => {
+      console.log(`Server running on address http://localhost:${port}`);
+    });
+    server.on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE' && retriesLeft > 0) {
+        const nextPort = port + 1;
+        console.warn(`Port ${port} in use. Retrying on ${nextPort}...`);
+        startServer(nextPort, retriesLeft - 1);
+      } else if (err) {
+        console.error('Server failed to start:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  startServer(PORT);
 }).catch(err => {
   console.log('Error while connecting to Mongo: ', err);
 });
