@@ -9,12 +9,23 @@ let envLoaded = require('dotenv').config({ path: rootEnvPath });
 if (envLoaded.error) {
   envLoaded = require('dotenv').config({ path: localEnvPath });
 }
+
+// Debug: Log environment loading
+console.log('Environment loading status:', envLoaded.error ? 'Failed' : 'Success');
+console.log('Root env path:', rootEnvPath);
+console.log('Local env path:', localEnvPath);
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { default: mongoose } = require('mongoose');
 const multer = require('multer');
-const DB_PATH = process.env.MONGO_URI || process.env.MONGO_DEV_URI;
+// MongoDB connection with proper fallback
+const DB_PATH = process.env.MONGO_URI || process.env.MONGO_DEV_URI || 'mongodb://127.0.0.1:27017/airbnb';
+
+// Debug: Log which URI is being used
+console.log('MONGO_URI from env:', process.env.MONGO_URI);
+console.log('MONGO_DEV_URI from env:', process.env.MONGO_DEV_URI);
+console.log('Using DB_PATH:', DB_PATH);
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -26,7 +37,9 @@ const errorsController = require("./controllers/errors");
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+const viewsPath = path.join(__dirname, '..', 'frontend', 'views');
+app.set('views', viewsPath);
+console.log('Views directory set to:', viewsPath);
 
 const store = new MongoDBStore({
   uri: DB_PATH,
@@ -65,8 +78,9 @@ const multerOptions = {
 };
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(multer(multerOptions).single('photo'));
-app.use(express.static(path.join(rootDir, 'public')))
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')))
 app.use("/uploads", express.static(path.join(rootDir, 'uploads')))
 app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')))
 app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')))
@@ -96,11 +110,17 @@ app.use("/host", hostRouter);
 
 app.use(errorsController.pageNotFound);
 
-const PORT = Number(process.env.PORT || 3003);
+const PORT = Number(process.env.PORT || 3004);
 
-const showMasked = (s) => (typeof s === 'string' ? `${s.slice(0, 20)}...` : s);
-console.log("MONGO_URI from env:", process.env.MONGO_URI);
-console.log("Using DB_PATH:", showMasked(DB_PATH));
+// Validate DB_PATH before attempting connection
+if (!DB_PATH || typeof DB_PATH !== 'string') {
+  console.error('Error: No valid MongoDB URI found. Please check your .env file.');
+  console.error('Expected MONGO_URI or MONGO_DEV_URI environment variables.');
+  process.exit(1);
+}
+
+console.log("Attempting to connect to MongoDB...");
+console.log("Using DB_PATH:", DB_PATH);
 
 mongoose.connect(DB_PATH, { dbName: 'airbnb' }).then(() => {
   console.log('Connected to Mongo');
@@ -125,3 +145,4 @@ mongoose.connect(DB_PATH, { dbName: 'airbnb' }).then(() => {
 }).catch(err => {
   console.log('Error while connecting to Mongo: ', err);
 });
+

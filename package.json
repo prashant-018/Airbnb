@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css",
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "build:css": "tailwindcss -i ./src/input.css -o ./frontend/public/css/output.css",
+    "start": "node server/app.js",
+    "dev": "nodemon",
     "build": "npm run build:css"
   },
   "keywords": [],

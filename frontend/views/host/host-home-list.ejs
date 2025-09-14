@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Host Dashboard - Your Homes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/output.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .card-hover {
+      transition: all 0.35s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-hover {
+      transition: all 0.25s ease;
+    }
+
+    .btn-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <%- include('../partials/nav') %>
+
+    <main class="container mx-auto px-4 py-10 max-w-7xl">
+      <!-- Header -->
+      <div
+        class="relative rounded-3xl shadow-xl p-10 mb-12 overflow-hidden bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 text-white">
+        <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h1 class="text-4xl font-bold mb-2 drop-shadow">Hey Host! Manage Your Properties</h1>
+            <p class="opacity-90 text-lg">You have <%= registeredHomes.length %> property<%= registeredHomes.length !==1
+                  ? 's' : '' %> listed</p>
+          </div>
+          <a href="/host/add-home"
+            class="mt-6 md:mt-0 bg-white text-rose-600 font-semibold py-3 px-8 rounded-full flex items-center gap-2 btn-hover">
+            <i class="fas fa-plus-circle"></i> Add New Property
+          </a>
+        </div>
+      </div>
+
+      <!-- Homes Grid -->
+      <% if (registeredHomes.length> 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <% registeredHomes.forEach((home, index)=> { %>
+            <div class="bg-white/90 backdrop-blur rounded-2xl shadow-md overflow-hidden card-hover animate-fade-in">
+              <div class="relative">
+                <img src="<%= home.photo %>" alt="<%= home.houseName %>" class="w-full h-60 object-cover" />
+                <div class="absolute top-4 right-4 bg-white rounded-full shadow-lg p-2">
+                  <i class="fas fa-home text-rose-500"></i>
+                </div>
+                <div
+                  class="absolute bottom-3 left-3 bg-white/90 text-sm font-medium text-gray-800 px-3 py-1 rounded-full flex items-center shadow">
+                  <i class="fas fa-star text-yellow-400 mr-1"></i>
+                  <%= home.rating %>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1 truncate">
+                  <%= home.houseName %>
+                </h3>
+                <div class="flex items-center text-gray-600 text-sm mb-3">
+                  <i class="fas fa-map-marker-alt text-rose-400 mr-2"></i>
+                  <span class="truncate">
+                    <%= home.location %>
+                  </span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <%= home.description %>
+                </p>
+                <div class="flex justify-between items-center mb-5">
+                  <span class="text-lg font-bold text-rose-600">Rs<%= home.price %><span
+                        class="text-gray-500 text-sm">/night</span></span>
+                </div>
+                <div class="flex gap-3">
+                  <a href="/host/edit-home/<%=home._id%>?editing=true"
+                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2.5 rounded-xl font-medium flex items-center justify-center btn-hover">
+                    <i class="fas fa-edit mr-2"></i> Edit
+                  </a>
+                  <button onclick="showDeleteConfirmation('<%= home._id %>', '<%= home.houseName %>')"
+                    class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-medium flex items-center justify-center btn-hover">
+                    <i class="fas fa-trash-alt mr-2"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+        </div>
+        <% } else { %>
+          <!-- Empty State -->
+          <div
+            class="bg-white/90 backdrop-blur rounded-3xl shadow-md p-14 text-center max-w-lg mx-auto animate-fade-in">
+            <div class="bg-rose-100 rounded-full p-6 inline-flex mb-6 shadow-inner">
+              <i class="fas fa-home text-rose-500 text-4xl"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">No properties yet</h3>
+            <p class="text-gray-600 mb-8">Start your hosting journey by adding your first property.</p>
+            <a href="/host/add-home"
+              class="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold py-3 px-10 rounded-full inline-flex items-center gap-2 btn-hover">
+              <i class="fas fa-plus-circle"></i> Add Your First Property
+            </a>
+          </div>
+          <% } %>
+    </main>
+
+    <!-- Delete Confirmation -->
+    <div id="deleteConfirmation"
+      class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 animate-fade-in">
+        <div class="text-center">
+          <div class="bg-rose-100 rounded-full p-4 inline-flex mb-4">
+            <i class="fas fa-exclamation-triangle text-rose-500 text-3xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Delete Property</h3>
+          <p class="text-gray-600 mb-6">Are you sure you want to delete <span id="propertyName"
+              class="font-semibold"></span>? This action cannot be undone.</p>
+          <div class="flex gap-3 justify-center">
+            <button onclick="hideDeleteConfirmation()"
+              class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg">
+              Cancel
+            </button>
+            <form id="deleteForm" method="POST" class="inline">
+              <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-6 rounded-lg">
+                Yes, Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showDeleteConfirmation(id, name) {
+        document.getElementById('propertyName').textContent = name;
+        document.getElementById('deleteForm').action = `/host/delete-home/${id}`;
+        document.getElementById('deleteConfirmation').classList.remove('hidden');
+      }
+      function hideDeleteConfirmation() {
+        document.getElementById('deleteConfirmation').classList.add('hidden');
+      }
+      document.getElementById('deleteConfirmation').addEventListener('click', e => {
+        if (e.target.id === 'deleteConfirmation') hideDeleteConfirmation();
+      });
+    </script>
+</body>
+
+</html>

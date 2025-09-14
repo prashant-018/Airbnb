@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= pageTitle %>
+  </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/output.css" />
+  <script>
+    async function toggleFavourite(homeId) {
+      console.log('toggleFavourite called with homeId:', homeId);
+      
+      const btn = document.getElementById(`favourite-btn-${homeId}`);
+      const text = document.getElementById(`favourite-text-${homeId}`);
+      const heartIcon = btn.querySelector('i');
+
+      console.log('Button element:', btn);
+      console.log('Text element:', text);
+      console.log('Current text content:', text.textContent);
+
+      // Disable button during request
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+
+      try {
+        // Determine if we're adding or removing based on current state
+        const isCurrentlyFavourite = text.textContent.includes('Remove');
+        const url = isCurrentlyFavourite ? `/favourites/delete/${homeId}` : '/favourites';
+        const method = isCurrentlyFavourite ? 'POST' : 'POST';
+
+        console.log('isCurrentlyFavourite:', isCurrentlyFavourite);
+        console.log('URL:', url);
+        console.log('Method:', method);
+
+        const requestOptions = {
+          method: method,
+        };
+
+        if (isCurrentlyFavourite) {
+          // For delete request, no body needed
+          console.log('Making delete request');
+        } else {
+          // For add request, include JSON body
+          requestOptions.headers = {
+            'Content-Type': 'application/json',
+          };
+          requestOptions.body = JSON.stringify({ homeId: homeId });
+          console.log('Request body:', requestOptions.body);
+        }
+
+        console.log('Request options:', requestOptions);
+
+        const response = await fetch(url, requestOptions);
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (response.ok) {
+          if (data.isFavourite) {
+            // Added to favourites
+            btn.classList.remove('bg-green-300', 'hover:bg-green-500');
+            btn.classList.add('bg-red-300', 'hover:bg-red-500');
+            text.textContent = 'Remove from Favourites';
+            if (heartIcon) {
+              heartIcon.classList.remove('far');
+              heartIcon.classList.add('fas');
+            }
+          } else {
+            // Removed from favourites
+            btn.classList.remove('bg-red-300', 'hover:bg-red-500');
+            btn.classList.add('bg-green-300', 'hover:bg-green-500');
+            text.textContent = 'Add to Favourite';
+            if (heartIcon) {
+              heartIcon.classList.remove('fas');
+              heartIcon.classList.add('far');
+            }
+          }
+
+          // Show success message
+          showMessage(data.message, 'success');
+        } else {
+          showMessage(data.error || 'Failed to update favourites', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Failed to update favourites', 'error');
+      } finally {
+        // Re-enable button
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      }
+    }
+
+    function showMessage(message, type) {
+      // Create a temporary message element
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+      messageDiv.textContent = message;
+
+      document.body.appendChild(messageDiv);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        if (document.body.contains(messageDiv)) {
+          document.body.removeChild(messageDiv);
+        }
+      }, 3000);
+    }
+  </script>

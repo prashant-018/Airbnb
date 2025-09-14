@@ -1,82 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login to Your Account</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fef2f2',
-                            100: '#fee2e2',
-                            500: '#ef4444',
-                            600: '#dc2626',
-                            700: '#b91c1c',
-                            900: '#7f1d1d',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(10px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="/css/output.css" />
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             min-height: 100vh;
         }
-        
+
         .form-input:focus {
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
-        
+
         .btn-primary {
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        
+
         .btn-primary:active {
             transform: translateY(0);
         }
-        
+
         .card-hover {
             transition: all 0.3s ease;
         }
-        
+
         .card-hover:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        
+
         @media (max-width: 640px) {
             .mobile-padding {
                 padding: 1.5rem 1rem;
@@ -84,6 +50,7 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
     <div class="w-full max-w-md mx-auto">
         <!-- Logo/Header Section -->
@@ -96,7 +63,7 @@
             <h1 class="text-3xl font-bold text-gray-800">Welcome Back</h1>
             <p class="text-gray-500 mt-2">Sign in to continue your journey</p>
         </div>
-        
+
         <!-- Form Container -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden card-hover animate-slide-up">
             <div class="p-8 mobile-padding">
@@ -105,7 +72,7 @@
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     <span id="error-message">Sample error message would appear here</span>
                 </div>
-                
+
                 <form action="/login" method="POST">
                     <!-- Email field -->
                     <div class="mb-5">
@@ -114,34 +81,30 @@
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <i class="fas fa-envelope"></i>
                             </span>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="your.email@example.com"
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com"
                                 class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 form-input transition duration-200"
                                 required />
                         </div>
                     </div>
-                    
+
                     <!-- Password field -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                            <a href="/forgot-password" class="text-sm text-primary-500 hover:text-primary-600 font-medium hover:underline transition">Forgot password?</a>
+                            <a href="/forgot-password"
+                                class="text-sm text-primary-500 hover:text-primary-600 font-medium hover:underline transition">Forgot
+                                password?</a>
                         </div>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input
-                                type="password"
-                                id="loginPassword"
-                                name="password"
-                                placeholder="Enter your password"
+                            <input type="password" id="loginPassword" name="password" placeholder="Enter your password"
                                 class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 form-input transition duration-200"
-                                required/>
-                            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" id="toggleLoginPassword">
+                                required />
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                id="toggleLoginPassword">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
@@ -149,43 +112,49 @@
 
                     <!-- Remember me checkbox -->
                     <div class="mb-7 flex items-center">
-                        <input type="checkbox" id="remember" name="remember" class="h-4 w-4 text-primary-500 focus:ring-primary-300 rounded border-gray-300" />
+                        <input type="checkbox" id="remember" name="remember"
+                            class="h-4 w-4 text-primary-500 focus:ring-primary-300 rounded border-gray-300" />
                         <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
                     </div>
-        
+
                     <!-- Submit button -->
-                    <button type="submit" class="w-full bg-primary-500 text-white py-3.5 rounded-lg hover:bg-primary-600 font-medium flex items-center justify-center btn-primary">
+                    <button type="submit"
+                        class="w-full bg-primary-500 text-white py-3.5 rounded-lg hover:bg-primary-600 font-medium flex items-center justify-center btn-primary">
                         <span>Sign In</span>
                         <i class="fas fa-sign-in-alt ml-2"></i>
                     </button>
-                    
+
                     <!-- Divider -->
                     <div class="relative flex items-center mt-6 mb-4">
                         <div class="flex-grow border-t border-gray-200"></div>
                         <span class="flex-shrink mx-4 text-gray-400 text-sm">Or continue with</span>
                         <div class="flex-grow border-t border-gray-200"></div>
                     </div>
-                    
+
                     <!-- Social login buttons -->
                     <div class="grid grid-cols-2 gap-3">
-                        <button type="button" class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition">
+                        <button type="button"
+                            class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition">
                             <i class="fab fa-google text-red-500 mr-2"></i>
                             Google
                         </button>
-                        <button type="button" class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition">
+                        <button type="button"
+                            class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition">
                             <i class="fab fa-facebook text-blue-600 mr-2"></i>
                             Facebook
                         </button>
                     </div>
                 </form>
-                
+
                 <!-- Sign up link -->
                 <p class="text-center mt-6 text-gray-500 text-sm">
-                    Don't have an account yet? <a href="/signup" class="text-primary-500 hover:text-primary-600 font-medium hover:underline transition">Sign up</a>
+                    Don't have an account yet? <a href="/signup"
+                        class="text-primary-500 hover:text-primary-600 font-medium hover:underline transition">Sign
+                        up</a>
                 </p>
             </div>
         </div>
-        
+
         <!-- Footer -->
         <div class="text-center mt-6 animate-fade-in">
             <p class="text-gray-400 text-sm">&copy; 2023 Company Name. All rights reserved.</p>
@@ -194,10 +163,10 @@
 
     <script>
         // Password visibility toggle
-        document.getElementById('toggleLoginPassword').addEventListener('click', function() {
+        document.getElementById('toggleLoginPassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('loginPassword');
             const icon = this.querySelector('i');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -208,9 +177,9 @@
                 icon.classList.add('fa-eye');
             }
         });
-        
+
         // Add animation to form elements
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const formElements = document.querySelectorAll('input, label, button, .bg-red-50');
             formElements.forEach((element, index) => {
                 element.style.animationDelay = `${index * 0.05}s`;
@@ -218,4 +187,5 @@
         });
     </script>
 </body>
+
 </html>

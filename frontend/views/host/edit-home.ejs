@@ -1,30 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= editing ? "Edit" : "Register"%> Your Home | BharatBnB</title>
+  <title>
+    <%= editing ? "Edit" : "Register" %> Your Home | BharatBnB
+  </title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              500: '#e63946', /* Vibrant Indian Red */
-              600: '#d62828',
-              700: '#a4161a'
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="/css/output.css" />
 </head>
+
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
   <div class="w-full max-w-2xl mx-auto">
     <!-- Header -->
@@ -35,16 +21,17 @@
         </div>
       </div>
       <h1 class="text-3xl font-bold text-gray-800">
-        <%= editing ? "Edit" : "Register"%> Your Home 
+        <%= editing ? "Edit" : "Register" %> Your Home
       </h1>
       <p class="text-gray-500 mt-2 text-sm">
-        <%= editing ? "Update your homestay details" : "List your property and start hosting travelers"%>
+        <%= editing ? "Update your homestay details" : "List your property and start hosting travelers" %>
       </p>
     </div>
 
     <!-- Form -->
     <div class="bg-white rounded-xl shadow-lg p-8">
-      <form action="/host/<%= editing ? "edit-home" : "add-home"%>" method="POST" enctype="multipart/form-data" class="space-y-6">
+      <form action="/host/<%= editing ? " edit-home" : "add-home" %>" method="POST" enctype="multipart/form-data"
+        class="space-y-6">
         <input type="hidden" name="id" value="<%= editing ? home._id : ''%>">
 
         <!-- House Name -->
@@ -52,15 +39,10 @@
           <label for="houseName" class="block text-sm font-medium text-gray-700">House/Property Name</label>
           <div class="mt-1 relative">
             <i class="fas fa-signature absolute left-3 top-3 text-gray-400"></i>
-            <input 
-              type="text" 
-              id="houseName" 
-              name="houseName" 
-              value="<%= editing ? home.houseName : ''%>" 
+            <input type="text" id="houseName" name="houseName" value="<%= editing ? home.houseName : ''%>"
               placeholder="Heritage Haveli in Jaipur"
               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
-              required
-            >
+              required>
           </div>
         </div>
 
@@ -70,17 +52,10 @@
             <label for="price" class="block text-sm font-medium text-gray-700">Price Per Night (₹)</label>
             <div class="mt-1 relative">
               <i class="fas fa-indian-rupee-sign absolute left-3 top-3 text-gray-400"></i>
-              <input 
-                type="number" 
-                id="price" 
-                name="price" 
-                value="<%= editing ? home.price : ''%>" 
-                placeholder="2500"
-                min="0" 
-                step="1" 
-                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" 
-                required
-              >
+              <input type="number" id="price" name="price" value="<%= editing ? home.price : ''%>" placeholder="2500"
+                min="0" step="1"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
+                required>
             </div>
           </div>
 
@@ -88,18 +63,10 @@
             <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
             <div class="mt-1 relative">
               <i class="fas fa-star absolute left-3 top-3 text-yellow-400"></i>
-              <input 
-                type="number" 
-                id="rating" 
-                name="rating" 
-                value="<%= editing ? home.rating : ''%>" 
-                placeholder="4.7"
-                min="0" 
-                max="5" 
-                step="0.1" 
-                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" 
-                required
-              >
+              <input type="number" id="rating" name="rating" value="<%= editing ? home.rating : ''%>" placeholder="4.7"
+                min="0" max="5" step="0.1"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
+                required>
             </div>
           </div>
         </div>
@@ -109,41 +76,28 @@
           <label for="location" class="block text-sm font-medium text-gray-700">Location (City, State)</label>
           <div class="mt-1 relative">
             <i class="fas fa-map-marker-alt absolute left-3 top-3 text-red-500"></i>
-            <input 
-              type="text" 
-              id="location" 
-              name="location" 
-              value="<%= editing ? home.location : ''%>" 
+            <input type="text" id="location" name="location" value="<%= editing ? home.location : ''%>"
               placeholder="Mumbai, Maharashtra"
               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
-              required
-            >
+              required>
           </div>
         </div>
 
         <!-- Description -->
         <div>
           <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-          <textarea 
-            id="description" 
-            name="description" 
-            rows="4" 
+          <textarea id="description" name="description" rows="4"
             placeholder="Describe your property, e.g. 'Modern 2BHK near Marine Drive, perfect for families & business travelers.'"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
-          ><%= editing ? home.description : ''%></textarea>
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"><%= editing ? home.description : ''%></textarea>
         </div>
 
         <!-- File Upload -->
         <div>
           <label class="block text-sm font-medium text-gray-700">Property Photo</label>
-          <div class="mt-2 flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative">
-            <input 
-              id="photo" 
-              name="photo" 
-              type="file" 
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              accept="image/jpg, image/jpeg, image/png" 
-              <%= editing ? '' : 'required' %>
+          <div
+            class="mt-2 flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative">
+            <input id="photo" name="photo" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              accept="image/jpg, image/jpeg, image/png" <%=editing ? '' : 'required' %>
             >
             <div class="text-center px-4">
               <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
@@ -154,12 +108,12 @@
         </div>
 
         <!-- Submit -->
-        <button 
-          type="submit" 
-          class="w-full bg-primary-500 text-white py-3.5 rounded-lg hover:bg-primary-600 focus:ring-4 focus:ring-primary-300 font-medium transition flex items-center justify-center"
-        >
+        <button type="submit"
+          class="w-full bg-primary-500 text-white py-3.5 rounded-lg hover:bg-primary-600 focus:ring-4 focus:ring-primary-300 font-medium transition flex items-center justify-center">
           <i class="fas fa-<%= editing ? 'save' : 'plus-circle'%> mr-2"></i>
-          <span><%= editing ? "Update Property" : "Add Property"%></span>
+          <span>
+            <%= editing ? "Update Property" : "Add Property" %>
+          </span>
         </button>
       </form>
     </div>
@@ -170,11 +124,12 @@
 
   <script>
     // Show file name on upload
-    document.getElementById("photo").addEventListener("change", function(e) {
+    document.getElementById("photo").addEventListener("change", function (e) {
       if (e.target.files.length > 0) {
         document.getElementById("file-name").textContent = e.target.files[0].name;
       }
     });
   </script>
 </body>
+
 </html>
