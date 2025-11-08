@@ -56,12 +56,25 @@ const randomString = (length) => {
   return result;
 }
 
+// Ensure uploads directory exists - use server/uploads directory
+// This matches where existing files are stored
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Created uploads directory:', uploadsDir);
+} else {
+  console.log('Using existing uploads directory:', uploadsDir);
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    cb(null, randomString(10) + '-' + file.originalname);
+    // Sanitize filename to handle spaces and special characters
+    const sanitizedOriginalName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    cb(null, randomString(10) + '-' + sanitizedOriginalName);
   }
 });
 
@@ -77,13 +90,77 @@ const multerOptions = {
   storage, fileFilter
 };
 
+// DISABLE CSP IN DEVELOPMENT - Must be FIRST middleware
+// Patch response object BEFORE any other middleware can set headers
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+if (isDevelopment) {
+  // Use Node's 'header' event to intercept ALL headers before sending
+  app.use((req, res, next) => {
+    // Patch setHeader to block CSP
+    const originalSetHeader = res.setHeader.bind(res);
+    res.setHeader = function (name, value) {
+      if (name && typeof name === 'string' && name.toLowerCase() === 'content-security-policy') {
+        return res; // Block CSP
+      }
+      return originalSetHeader(name, value);
+    };
+
+    // Patch writeHead
+    const originalWriteHead = res.writeHead.bind(res);
+    res.writeHead = function (...args) {
+      // Remove CSP from headers if present
+      for (let i = 0; i < args.length; i++) {
+        if (typeof args[i] === 'object' && args[i] !== null) {
+          delete args[i]['Content-Security-Policy'];
+          delete args[i]['content-security-policy'];
+        }
+      }
+      return originalWriteHead.apply(this, args);
+    };
+
+    // Listen to 'header' event (fires just before headers are sent)
+    res.once('header', () => {
+      try {
+        res.removeHeader('Content-Security-Policy');
+      } catch (e) {
+        // Header might not exist, that's fine
+      }
+    });
+
+    next();
+  });
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(multer(multerOptions).single('photo'));
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')))
-app.use("/uploads", express.static(path.join(rootDir, 'uploads')))
-app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')))
-app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')))
+
+// Configure static middleware - remove CSP in development
+const staticOptions = isDevelopment ? {
+  setHeaders: (res, path, stat) => {
+    // Explicitly remove CSP header for static files in development
+    try {
+      res.removeHeader('Content-Security-Policy');
+    } catch (e) {
+      // Ignore if header doesn't exist
+    }
+  }
+} : {};
+
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'public'), staticOptions))
+
+// Serve uploaded files from server/uploads directory
+// All routes point to the same directory for consistency
+const uploadsStaticPath = path.join(__dirname, 'uploads');
+app.use("/uploads", express.static(uploadsStaticPath, staticOptions))
+app.use("/host/uploads", express.static(uploadsStaticPath, staticOptions))
+app.use("/homes/uploads", express.static(uploadsStaticPath, staticOptions))
+
+console.log('Static file serving configured:');
+console.log('  - /uploads ->', uploadsStaticPath);
+console.log('  - /host/uploads ->', uploadsStaticPath);
+console.log('  - /homes/uploads ->', uploadsStaticPath);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "KnowledgeGate AI with Complete Coding",
@@ -108,9 +185,35 @@ app.use("/host", (req, res, next) => {
 });
 app.use("/host", hostRouter);
 
+// Final CSP removal middleware - runs before 404 handler
+// Catches any CSP headers set by static middleware or error handlers
+if (isDevelopment) {
+  app.use((req, res, next) => {
+    // Intercept the response object one more time before 404
+    if (!res._cspRemoved) {
+      res._cspRemoved = true;
+      const originalWriteHead = res.writeHead;
+      res.writeHead = function (...args) {
+        // Remove CSP from headers before sending
+        if (args.length >= 2 && typeof args[1] === 'object') {
+          delete args[1]['Content-Security-Policy'];
+          delete args[1]['content-security-policy'];
+        }
+        const result = originalWriteHead.apply(this, args);
+        // Try to remove CSP after writeHead
+        try {
+          res.removeHeader('Content-Security-Policy');
+        } catch (e) { }
+        return result;
+      };
+    }
+    next();
+  });
+}
+
 app.use(errorsController.pageNotFound);
 
-const PORT = Number(process.env.PORT || 3004);
+const PORT = Number(process.env.PORT || 3005);
 
 // Validate DB_PATH before attempting connection
 if (!DB_PATH || typeof DB_PATH !== 'string') {

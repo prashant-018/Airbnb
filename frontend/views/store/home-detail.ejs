@@ -42,11 +42,81 @@
                             </div>
                         </div>
                         <div class="mt-2">
-                            <%- include('../partials/favourite', {home: home}) %>
+                            <%- include('../partials/favourite', {home: home, isFavourite: typeof isFavourite !== 'undefined' ? isFavourite : false}) %>
                         </div>
                     </div>
                 </div>
             </main>
+
+    <script>
+        // Toggle favourite with immediate UI update
+        document.getElementById("favourite-btn-<%= home._id %>").addEventListener("click", async function() {
+            const homeId = this.getAttribute("data-homeid");
+            const btn = this;
+            const text = document.getElementById("favourite-text-<%= home._id %>");
+            const heartIcon = btn.querySelector('i');
+
+            // Disable button during request
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            try {
+                // Check login first
+                const authRes = await fetch('/api/check-session', { credentials: 'same-origin' });
+                const auth = await authRes.json();
+                if (!auth.loggedIn) {
+                    alert('Login required!');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const res = await fetch("/favourites/toggle", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ homeId })
+                });
+
+                const data = await res.json();
+
+                if (res.status === 401) {
+                    alert('Login required!');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                if (data.success) {
+                    // Update UI immediately based on server response
+                    if (data.isFavourite === true) {
+                        text.innerText = "Remove from Favourites";
+                        btn.classList.remove('bg-green-300', 'hover:bg-green-500');
+                        btn.classList.add('bg-red-300', 'hover:bg-red-500');
+                        if (heartIcon) {
+                            heartIcon.classList.remove('far');
+                            heartIcon.classList.add('fas');
+                        }
+                    } else {
+                        text.innerText = "Add to Favourite";
+                        btn.classList.remove('bg-red-300', 'hover:bg-red-500');
+                        btn.classList.add('bg-green-300', 'hover:bg-green-500');
+                        if (heartIcon) {
+                            heartIcon.classList.remove('fas');
+                            heartIcon.classList.add('far');
+                        }
+                    }
+                } else {
+                    const message = data.message || 'Failed to update favourites';
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('Error toggling favourite:', error);
+                alert('Failed to update favourites');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        });
+    </script>
     </body>
 
     </html>

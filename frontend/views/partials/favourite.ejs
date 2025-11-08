@@ -1,6 +1,5 @@
-<button type="button" id="favourite-btn-<%= home._id %>"
-  class="bg-green-300 hover:bg-green-500 transition-colors duration-200 rounded px-3 py-2 text-sm font-medium"
-  onclick="toggleFavourite('<%= home._id %>')">
-  <i class="far fa-heart mr-1"></i>
-  <span id="favourite-text-<%= home._id %>">Add to Favourite</span>
+<button type="button" id="favourite-btn-<%= home._id %>" data-homeid="<%= home._id %>"
+  class="<%= typeof isFavourite !== 'undefined' && isFavourite ? 'bg-red-300 hover:bg-red-500' : 'bg-green-300 hover:bg-green-500' %> transition-colors duration-200 rounded px-3 py-2 text-sm font-medium">
+  <i class="<%= typeof isFavourite !== 'undefined' && isFavourite ? 'fas' : 'far' %> fa-heart mr-1"></i>
+  <span id="favourite-text-<%= home._id %>"><%= typeof isFavourite !== 'undefined' && isFavourite ? 'Remove from Favourites' : 'Add to Favourite' %></span>
 </button>
